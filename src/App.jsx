@@ -1,0 +1,31 @@
+import React,{useEffect,useState} from 'react';
+import {Routes,Route,NavLink,useLocation,Link} from 'react-router-dom';
+import {ArrowUpRight,Menu,X,Search,MapPin,CheckCircle2,HeartHandshake,BarChart3,Users,Globe2,ChevronRight} from 'lucide-react';
+import {motion,useScroll,useSpring} from 'framer-motion';
+import {causes,ngos,projects,stories} from './data';
+import Home from './pages/Home';
+import Causes from './pages/Causes';
+import NGOs from './pages/NGOs';
+import Projects from './pages/Projects';
+import Volunteer from './pages/Volunteer';
+import CSR from './pages/CSR';
+import Stories from './pages/Stories';
+import Resources from './pages/Resources';
+import Register from './pages/Register';
+
+export function Shell({children}){
+ const [open,setOpen]=useState(false); const loc=useLocation(); const {scrollYProgress}=useScroll(); const scale=useSpring(scrollYProgress,{stiffness:120,damping:30});
+ useEffect(()=>setOpen(false),[loc.pathname]);
+ const nav=[['Causes','/causes'],['NGOs','/ngos'],['Projects','/projects'],['Volunteer','/volunteer'],['CSR','/csr'],['Stories','/stories']];
+ return <><motion.div className="progress" style={{scaleX:scale}}/><header className="header"><Link className="logo" to="/"><span className="logo-mark">IG</span><span>IMPACT<span>GRID</span></span></Link><nav className={open?'nav open':'nav'}>{nav.map(([n,p])=><NavLink key={p} to={p}>{n}</NavLink>)}<Link className="nav-cta" to="/register">Join network <ArrowUpRight size={16}/></Link></nav><button className="menu" onClick={()=>setOpen(!open)} aria-label="menu">{open?<X/>:<Menu/>}</button></header>{children}<footer className="footer"><div><Link className="logo light" to="/"><span className="logo-mark">IG</span><span>IMPACT<span>GRID</span></span></Link><p>A modern network connecting people, organisations and resources to measurable community impact.</p></div><div className="footer-links"><div><b>Explore</b><Link to="/causes">Causes</Link><Link to="/ngos">NGOs</Link><Link to="/projects">Projects</Link><Link to="/stories">Stories</Link></div><div><b>Participate</b><Link to="/volunteer">Volunteer</Link><Link to="/csr">CSR Connect</Link><Link to="/register">Register NGO</Link><Link to="/resources">Resources</Link></div></div><div className="footer-bottom"><span>© 2026 ImpactGrid Network</span><span>Built for transparent, local impact.</span></div></footer></>
+}
+export default function App(){return <Shell><Routes><Route path="/" element={<Home/>}/><Route path="/causes" element={<Causes/>}/><Route path="/ngos" element={<NGOs/>}/><Route path="/projects" element={<Projects/>}/><Route path="/volunteer" element={<Volunteer/>}/><Route path="/csr" element={<CSR/>}/><Route path="/stories" element={<Stories/>}/><Route path="/resources" element={<Resources/>}/><Route path="/register" element={<Register/>}/><Route path="*" element={<Home/>}/></Routes></Shell>}
+
+export function SectionHead({eyebrow,title,text,light=false}){return <div className={'section-head '+(light?'light':'')}><span className="eyebrow">{eyebrow}</span><h2>{title}</h2>{text&&<p>{text}</p>}</div>}
+export function Stat({value,label}){return <div className="stat"><strong>{value}</strong><span>{label}</span></div>}
+export function Button({to='#',children,secondary=false}){return <Link className={'button '+(secondary?'secondary':'')} to={to}>{children}<ArrowUpRight size={17}/></Link>}
+const ngoPhotos=['https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1524749292158-7540c2494485?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=500&q=80','https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=500&q=80'];
+function photoFor(name){let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return ngoPhotos[h%ngoPhotos.length]}
+export function NGOCard({n}){const img=n.img||photoFor(n.name);return <article className="ngo-card"><div className="ngo-photo" style={{backgroundImage:`url(${img})`}}/><div className="ngo-top"><span className="avatar" style={{backgroundImage:`url(${img})`,backgroundSize:'cover',backgroundPosition:'center',color:'transparent'}}>{n.name.split(' ').map(x=>x[0]).slice(0,2).join('')}</span><span className="verified">{n.verified&&<CheckCircle2 size={14}/>} {n.verified?'Verified':'Listed'}</span></div><h3>{n.name}</h3><p><MapPin size={15}/>{n.city} · {n.cause}</p><div className="mini-metrics"><span><b>{n.people}</b> people reached</span><span><b>{n.projects}</b> projects</span></div></article>}
+export function ProjectCard({p,large=false}){return <article className={large?'project-card large':'project-card'}><div className="project-image" style={{backgroundImage:`url(${p.img})`}}><span>{p.cause}</span></div><div className="project-body"><div className="muted">{p.location}</div><h3>{p.title}</h3><div className="bar"><i style={{width:`${p.progress}%`}}/></div><div className="project-meta"><b>{p.raised}</b><span>of {p.goal}</span><span>{p.progress}% funded</span></div></div></article>}
+export function PageHero({eyebrow,title,text,children,dark=false,img}){return <section className={'page-hero '+(dark?'dark':'')}><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{text}</p>{children}</div><div className="hero-orbit">{img?<div className="hero-orbit-photo" style={{backgroundImage:`url(${img})`}}/>:<><div/><div/><div/></>}</div></section>}
